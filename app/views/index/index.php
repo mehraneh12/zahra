@@ -191,7 +191,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="public/js/demo.js"></script>
     <script type="text/javascript" src="public/js/helper.js"></script>
-   
+    <script type="text/javascript" src="public/js/bootstrap.min.js"></script>
 
     <script>
        
@@ -321,6 +321,7 @@ function addHtmlElement($name, $contactid) {
     // اینپوت فقط یکبار ساخته میشود ولی مقدار موجود در ان با کلیک مخاطبین تغییر میکند  
     if (!isHiddenInputCreated) {
           $("<input>").attr("type", "hidden").attr("id", "hiddeninput").appendTo("body");
+          $("<input>").attr("type", "hidden").attr("id", "hiddeninput2").appendTo("body");
           isHiddenInputCreated = true;
         }
 // در ساید بار یک ال ای میسازد و اطلاعات مخاطب را در ان قرار میدهد 
@@ -424,13 +425,30 @@ try{
         $(div).addClass("left");
     } else if (sendId == contactid) {
         $(div).addClass("right");
-    }
-                });
+    } 
+
+
+// ------------------------------------------------------------------
+
+    // ("#msg-card_body").on("click", "div.boxchat", function() {
+    // // $(this).addClass("active").siblings().removeClass("active");
+    // // var Nam = $(".active").children("p").text();
+    // // $("#changeNam1").text(Nam);
+    // var contactid = $(this).attr("id");
+    // var editemessage = $("#" + contactid).find(".message").text();
+    // $("#message").val(editemessage);
+    // $("#hiddeninput2").val(contactid);
+    // // $("#msg-card_body").empty();
+
+
+    // });
+// --------------------------------------------------------------------------^
+});
 } catch (exception) {
       console.error("606");
 }   
 }                          
-                  
+               
 
  //     فرستادن اطلاعات کانتکت و متن پیام ارسالی برای ثبت در جدول مسیج
  $("#sendMessage").click( function() {
@@ -477,6 +495,47 @@ try{
         document.getElementById('close1').onclick = function closemodalChange() {
             document.getElementById('modalChange').style.display = 'none';
         };
+
+// ------------------------------------------------------------{
+//         $(document).ready(function() {
+//     $("#msg-card_body").on("contextmenu","div" ,function(event) {
+//         event.preventDefault();
+        
+//         // ایجاد منو context
+//         var contextMenu = $("<ul>").attr("class", "context-menu");
+        
+//         // اضافه کردن گزینه حذف به منو
+//         var deleteOption = $("<li>").text("حذف");
+//         deleteOption.on("click", function() {
+//             // عملیات حذف
+//         });
+        
+//         // اضافه کردن گزینه ویرایش به منو
+//         var editOption = $("<li>").text("ویرایش");
+//         editOption.on("click", function() {
+//             // عملیات ویرایش
+//         });
+        
+//         // اضافه کردن گزینه‌ها به منو
+//         contextMenu.append(deleteOption, editOption);
+        
+//         // نمایش منو context در مکان کلیک شده
+//         contextMenu.css({
+//             top: event.pageY + "px",
+//             left: event.pageX + "px"
+//         });
+//         $("body").append(contextMenu);
+        
+//         // بستن منو context با کلیک خارج از آن
+//         $(document).on("click", function() {
+//             contextMenu.remove();
+//         });
+        
+//         return false;
+//     });
+// });
+// -------------------------------------------------------------------------}
+
        
   </script>
 </body>
