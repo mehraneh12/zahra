@@ -101,11 +101,7 @@ class model_index extends Model
    $sql = "UPDATE contact SET name=? where contactid=$id";
       $values = array($post['changename']);
       $this->doQuery($sql, $values); 
-       echo json_encode(
-         array(
-            "msg" => "ok"
-         )
-      );
+      
       
    }
 
@@ -115,10 +111,18 @@ class model_index extends Model
    {
 $message = $post['message'];
 $contactid = $post['contactid'];
-    $sql = "INSERT INTO message (sendId, getId, text,date) VALUES (?, ?, ?,?)";
+      $sql = "INSERT INTO message (sendId, getId, text,date) VALUES (?, ?, ?,?)";
       $values = array($_SESSION['id'], $contactid, $message,self::jalali_date("  H:i")); 
-    $this->doQuery($sql, $values);
-    echo json_encode(array("msg" => "ok")); 
+      $this->doQuery($sql, $values);
+
+
+      $sql = "SELECT * FROM message WHERE (sendId=? AND getId=? AND text=?) ";
+      $params = array( $_SESSION['id'], $contactid, $message);
+      $Message = $this->doSelect($sql, $params);file_put_contents("meh.json",print_r( $Message,true));
+    echo json_encode(array("Message" => $Message,
+                            "userid"=>$_SESSION['id'],
+                            "contactid"=> $contactid
+                              )); 
  }
 
 // تمام پیامهای بین مخاطب مذکور و فرد لاگین کننده را برمیگرداند و بصورت ارایه بازمیگرداند
@@ -139,6 +143,7 @@ if (sizeof($arrayMessages) > 0) {
 ));
 }
      
-   
+ // self::jalali_date("Y/m/d  h/i/s")
+// self::jalali_date("h/i/s")    
 }
 }

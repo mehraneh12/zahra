@@ -229,7 +229,7 @@
         };
        
 
-        //add_contact_data// اطلاعات مخاطبین را از مودال میگیرد و توسط تابع addHtmlElementبه ساید بار اضافه میکند  
+        //add_contact_data// مخاطبین را از مودال میگیرد و توسط تابع اد اچ تی ام ال به ساید بار اضافه میکند 
         add.onclick = function() {
             var contactName = document.getElementById("name2").value;
             var contactPhone = document.getElementById("phone2").value;
@@ -313,9 +313,62 @@
                     addHtmlElement(res[i]['name'],res[i]['contactid']);
               }
         }
+
+
+ var isHiddenInputCreated = false;
+function addHtmlElement($name, $contactid) {
+    //یک اینپوت از نوی مخفی میسازد و کانتکت ایدی مخاطب کلیک شده را در ان نگهداری میکند
+    // اینپوت فقط یکبار ساخته میشود ولی مقدار موجود در ان با کلیک مخاطبین تغییر میکند  
+    if (!isHiddenInputCreated) {
+          $("<input>").attr("type", "hidden").attr("id", "hiddeninput").appendTo("body");
+          isHiddenInputCreated = true;
+        }
+// در ساید بار یک ال ای میسازد و اطلاعات مخاطب را در ان قرار میدهد 
+    var li = $("<li>").attr("data-id", $contactid).attr("class", "liclass");
+    var buttonHTML = '<p>' + $name + '</p><button class="aclass"><i class="fa fa-edit aclass" id="edit" onclick="edit()"></i></button>';
+    li.html(buttonHTML);
+    $("#contact").append(li);
+    $("#modalAdd").css("display", "none");
+}
+
+     
+// با کلیک بر روی هر مخاطب در ساید بار رنگ ان و نام هدر کانتینر تغییر میکند
+// مقدار موجود در اینپوت مخفی هم تغییر میکند
+// و تمام پیامهای موجود در کانتینر پاک شده و پیامهای این مخاطب با کمک تابع ویو چت  نمایش داده میشود
+$("#contact").on("click", "li", function() {
+    $(this).addClass("active").siblings().removeClass("active");
+    var Nam = $(".active").children("p").text();
+    $("#changeNam1").text(Nam);
+    var contactid = $(this).attr("data-id");
+    $("#hiddeninput").val(contactid);
+    $("#msg-card_body").empty();
+      $.ajax({
+        url:"<?=URL;?>index/viewchat",
+        type:"POST",
+        data:{
+                "contactid":contactid
+            },
+            success: function(response) {
+                                     response = JSON.parse(response);
+                                     
+                                     viewChatfunc(  response.arrayMessages,response.userid,response.contactid);
+                                                 
+                                       },
+                      error: function(response) {
+                                     alert("خطای 500");
+                                     }
+    });
+    
+});
+
+
+
+
+
+
         //change_contact_data-----------------------------------------------------------------------------------------------------------------
 // نام جدید مخاطب را گرفته و در لیست مخاطبین و هدر کانتینر و در جدول کانتکت انرا تغییر می دهد
-        $("#changeName").click(function() {
+$("#changeName").click(function() {
             if ($("#newName").val() == "") {
                 warning2.style.display = "block";
                 $("#warning2").text("پر کردن تمامی فیلدها الزامیست");
@@ -337,11 +390,7 @@
                     "changenametable":changenametable
                 },
                 success: function(response) {
-                    response = JSON.parse(response);
-                    if (response.msg == "ok") {
-                           alert("change name in table was succesfully");
-                }
-                    
+                                     
                 },
                 error: function(response) {
                     alert("خطای 500");
@@ -351,50 +400,11 @@
             }
         });
        
-        var isHiddenInputCreated = false;
 
-function addHtmlElement($name, $contactid) {
-    // ساختن یک input از نوع hidden
-       if (!isHiddenInputCreated) {
-          $("<input>").attr("type", "hidden").attr("id", "hiddeninput").appendTo("body");
-          isHiddenInputCreated = true;
-        }
 
-    var li = $("<li>").attr("data-id", $contactid).attr("class", "liclass");
-    var buttonHTML = '<p>' + $name + '</p><button class="aclass"><i class="fa fa-edit aclass" id="edit" onclick="edit()"></i></button>';
-    li.html(buttonHTML);
-    $("#contact").append(li);
-    $("#modalAdd").css("display", "none");
-}
-// srart پنج شنبه &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-$("#contact").on("click", "li", function() {
-    $(this).addClass("active").siblings().removeClass("active");
-    var Nam = $(".active").children("p").text();
-    $("#changeNam1").text(Nam);
-    var contactid = $(this).attr("data-id");
-    $("#hiddeninput").val(contactid);
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    $("#msg-card_body").empty();
-    $("#msg-card_body").children().empty();
-    $.ajax({
-        url:"<?=URL;?>index/viewchat",
-        type:"POST",
-        data:{
-                "contactid":contactid
-            },
-            success: function(response) {
-                                     response = JSON.parse(response);
-                                     
-                                     viewChatfunc(  response.arrayMessages,response.userid,response.contactid);
-                                                 
-                                       },
-                      error: function(response) {
-                                     alert("خطای 500");
-                                     }
-    });
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-});
+
+
+// با کلیک بر روی یک مخاطب پیامهای بین مخاطب و فرد لاگین کننده را در کانتینر به نمایش میگذارد
 
 function viewChatfunc(arrayMessages, userid, contactid) {
 
@@ -421,27 +431,14 @@ try{
 }   
 }                          
                   
-// self::jalali_date("Y/m/d")
-// self::jalali_date("h/i/s")    
 
-// function funcRight(boxMessage){
-//     // استایلی بده تاdiv ایجاد شده سمت راست صفحه قرار بگیرد
-//     console.log("funcRig");
-// }   
-// function funcLeft(boxMessage){
-//     // استایلی بده که divایجاد شده سمت چپ صفحه قرار بگیرد
-//     console.log("funcLef");
-// }   
-
-            //    var isMessageSent = false;// فرستادن اطلاعات کانتکت و متن پیام ارسالی برای ثبت در جدول مسیج
-                $("#sendMessage").click( function() {
+ //     فرستادن اطلاعات کانتکت و متن پیام ارسالی برای ثبت در جدول مسیج
+ $("#sendMessage").click( function() {
                     
-                    var message = $("#message").val();
-                    var contactid=   $("#hiddeninput").val();
-                   
-                    
-               // نمایش محتوای اولین فرزند داخل یک المان li
-               $.ajax({
+         var message = $("#message").val();
+         var contactid=   $("#hiddeninput").val();
+      
+         $.ajax({
                       url: "<?=URL;?>index/chat",
                       type: "POST",
                       data: {
@@ -450,12 +447,8 @@ try{
                             },
                        success: function(response) {
                                                         response = JSON.parse(response);
-                                                        if (response.msg == "ok") {
-                                                            alert("message added successfuly");
-                                                            // isMessageSent = true;
-                                                          
-								                               }
-                                                             
+                                                       
+                                                        viewChatfunc( response.Message,response.userid,response.contactid);
                                                           $("#message").val("");
 
                                                    },
@@ -465,29 +458,22 @@ try{
                      });
                     });
            
-                    
- 
-        
-    
 
-    
+
+ // با کلیک بر روی دکمه ادیت مخاطب مودال مربوط به تغیر نام را نمایش میدهد
     function edit( event,element) {
     document.getElementById("newName").value = "";
             document.getElementById("warning2").style.display = "block";
             document.getElementById("modalChange").style.display = 'block'; 
-        //     var dataIdValue = $(element).closest("li").attr("data-id");
-        //    var hiddenInput = $("<input>").attr("type", "hidden").attr("id", "hiddeninput").val(dataIdValue);
-        //     $("#modalChange").append(hiddenInput);
-   
+        
        }
 
-
-// مودال اضافه کردن مخاطب را پنهان میکند
+// با کلیک بر روی ضربدر مودال اضافه کردن مخاطب را میبندد
         close.onclick = function closeModal() {
             modalAdd.style.display = 'none';
         };
 
-// مودال تغییر نام را پنهان میکند
+// با کلیک بر روی ضربدر مودال تغییر نام مخاطب را میبندد
         document.getElementById('close1').onclick = function closemodalChange() {
             document.getElementById('modalChange').style.display = 'none';
         };
